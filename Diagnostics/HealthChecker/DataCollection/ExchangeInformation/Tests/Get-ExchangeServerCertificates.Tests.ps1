@@ -44,8 +44,7 @@ Describe "Testing Get-ExchangeServerCertificates.ps1" {
             $results[0].SignatureHashAlgorithm | Should -Be "sha1"
             $results[0].SignatureHashAlgorithmSecure | Should -Be 1
             $results[0].IsSanCertificate | Should -Be $false
-            $testDays = ((ConvertTimeToUtcHelper -TimeToConvert "7/11/2026 3:59:05 PM") - (Get-Date)).Days
-            $results[0].LifetimeInDays | Should -Be $testDays
+            $results[0].UtcLifetimeInDays | Should -Be 1652
             $results[0].PublicKeySize | Should -Be 2048
         }
 
@@ -58,8 +57,7 @@ Describe "Testing Get-ExchangeServerCertificates.ps1" {
             $results[1].SignatureHashAlgorithmSecure | Should -Be 1
             $results[1].IsSanCertificate | Should -Be $true
             ($results[1].Namespaces).Count | Should -Be 2
-            $testDays = ((ConvertTimeToUtcHelper -TimeToConvert "8/6/2026 3:56:14 PM") - (Get-Date)).Days
-            $results[1].LifetimeInDays | Should -Be $testDays
+            $results[1].UtcLifetimeInDays | Should -Be 1678
             $results[1].PublicKeySize | Should -Be 2048
         }
 

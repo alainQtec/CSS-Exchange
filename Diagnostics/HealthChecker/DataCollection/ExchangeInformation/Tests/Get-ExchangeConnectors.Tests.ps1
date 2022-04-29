@@ -131,13 +131,11 @@ Describe "Testing Get-ExchangeConnectors.ps1" {
             ($results[5].CertificateDetails.CertificateLifetimeInfo).Count | Should -Be 2
             foreach ($key in ($results[5].CertificateDetails.CertificateLifetimeInfo).keys) {
                 if ($key -eq "E267D459A0FB53D0EF225C11FAC062D522648C09") {
-                    $testDays = ((ConvertTimeToUtcHelper -TimeToConvert "8/6/2026 12:00:00 AM") - (Get-Date)).Days
-                    ($results[5].CertificateDetails.CertificateLifetimeInfo)[$key] | Should -Be $testDays
+                    ($results[5].CertificateDetails.UtcCertificateLifetimeInfo)[$key] | Should -Be 1677
                 }
 
                 if ($key -eq "03221367D3A3E863698501592A9B9C420D8D3F4E") {
-                    $testDays = ((ConvertTimeToUtcHelper -TimeToConvert "3/27/2027 2:12:35 PM") - (Get-Date)).Days
-                    ($results[5].CertificateDetails.CertificateLifetimeInfo)[$key] | Should -Be $testDays
+                    ($results[5].CertificateDetails.UtcCertificateLifetimeInfo)[$key] | Should -Be 1911
                 }
             }
         }
@@ -222,8 +220,7 @@ Describe "Testing Get-ExchangeConnectors.ps1" {
 
         It "Certificate Limetime Should Be Returned For Connectors With TlsCertificateName Set" {
             $cloudConnectors[1].CertificateDetails.TlsCertificateNameStatus | Should -Be "TlsCertificateMatch"
-            $testDays = ((ConvertTimeToUtcHelper -TimeToConvert "8/6/2026 12:00:00 AM") - (Get-Date)).Days
-            $cloudConnectors[1].CertificateDetails.CertificateLifetimeInfo.values | Should -Be $testDays
+            $cloudConnectors[1].CertificateDetails.UtcCertificateLifetimeInfo.values | Should -Be 1677
         }
     }
 

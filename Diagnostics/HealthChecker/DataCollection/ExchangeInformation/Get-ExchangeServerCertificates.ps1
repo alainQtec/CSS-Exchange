@@ -23,6 +23,7 @@ Function Get-ExchangeServerCertificates {
             foreach ($cert in $exchangeServerCertificates) {
                 try {
                     $certificateLifetime = ([System.Convert]::ToDateTime($cert.NotAfter, [System.Globalization.DateTimeFormatInfo]::InvariantInfo) - (Get-Date)).Days
+                    $certificateLifetimeUtc = ([System.Convert]::ToDateTime($cert.NotAfter, [System.Globalization.DateTimeFormatInfo]::InvariantInfo).ToUniversalTime() - (Get-Date).ToUniversalTime()).Days
                     $sanCertificateInfo = $false
 
                     $currentErrors = $Error.Count
@@ -125,6 +126,7 @@ Function Get-ExchangeServerCertificates {
                     $certInformationObj | Add-Member -MemberType NoteProperty -Name "Services" -Value $cert.Services
                     $certInformationObj | Add-Member -MemberType NoteProperty -Name "IsCurrentAuthConfigCertificate" -Value $isAuthConfigInfo
                     $certInformationObj | Add-Member -MemberType NoteProperty -Name "LifetimeInDays" -Value $certificateLifetime
+                    $certInformationObj | Add-Member -MemberType NoteProperty -Name "UtcLifetimeInDays" -Value $certificateLifetimeUtc
                     $certInformationObj | Add-Member -MemberType NoteProperty -Name "Status" -Value $certStatus
                     $certInformationObj | Add-Member -MemberType NoteProperty -Name "CertificateObject" -Value $cert
 

@@ -40,19 +40,20 @@ Function Get-ExchangeConnectors {
                 TlsAuthLevel       = $null
                 TlsDomain          = $null
                 CertificateDetails = [PSCustomObject]@{
-                    CertificateMatchDetected = $false
-                    GoodTlsCertificateSyntax = $false
-                    TlsCertificateName       = $null
-                    TlsCertificateNameStatus = $null
-                    TlsCertificateSet        = $false
-                    CertificateLifetimeInfo  = $null
+                    CertificateMatchDetected   = $false
+                    GoodTlsCertificateSyntax   = $false
+                    TlsCertificateName         = $null
+                    TlsCertificateNameStatus   = $null
+                    TlsCertificateSet          = $false
+                    CertificateLifetimeInfo    = $null
+                    UtcCertificateLifetimeInfo = $null
                 }
             }
 
             Write-Verbose ("Creating object for Exchange connector: '{0}'" -f $ConnectorObject.Identity)
             if ($null -ne $ConnectorObject.Server) {
                 Write-Verbose "Exchange ReceiveConnector detected"
-                $exchangeFactoryConnectorReturnObject.ConnectorType =  "Receive"
+                $exchangeFactoryConnectorReturnObject.ConnectorType = "Receive"
                 $exchangeFactoryConnectorReturnObject.TransportRole = $ConnectorObject.TransportRole
                 if (-not([System.String]::IsNullOrEmpty($ConnectorObject.TlsDomainCapabilities))) {
                     $exchangeFactoryConnectorReturnObject.CloudEnabled = $true
@@ -123,7 +124,7 @@ Function Get-ExchangeConnectors {
                         $issuer = $TlsCertificateName.Substring(($issuerIndex + 3), ($subjectIndex - 3))
                         $subject = $TlsCertificateName.Substring($subjectIndex + 3)
                     } else {
-                        $issuer  = $TlsCertificateName.Substring($issuerIndex, $subjectIndex)
+                        $issuer = $TlsCertificateName.Substring($issuerIndex, $subjectIndex)
                         $subject = $TlsCertificateName.Substring($subjectIndex)
                     }
                 }
@@ -173,6 +174,7 @@ Function Get-ExchangeConnectors {
 
                             $certificateMatches = 0
                             $certificateLifetimeInformation = @{}
+                            $utcCertificateLifetimeInformation = @{}
                             foreach ($certificate in $CertificateObject) {
                                 if (($certificate.Issuer -eq $connectorTlsCertificateNormalizedObject.Issuer) -and
                                     ($certificate.Subject -eq $connectorTlsCertificateNormalizedObject.Subject)) {
@@ -180,7 +182,7 @@ Function Get-ExchangeConnectors {
                                     $connectorObject.CertificateDetails.CertificateMatchDetected = $true
                                     $connectorObject.CertificateDetails.TlsCertificateNameStatus = "TlsCertificateMatch"
                                     $certificateLifetimeInformation.Add($certificate.Thumbprint, $certificate.LifetimeInDays)
-
+                                    $utcCertificateLifetimeInformation.Add($certificate.Thumbprint, $certificate.UtcLifetimeInDays)
                                     $certificateMatches++
                                 }
                             }
@@ -191,6 +193,7 @@ Function Get-ExchangeConnectors {
                             } else {
                                 Write-Verbose ("We found: '{0}' matching certificates on the server" -f $certificateMatches)
                                 $connectorObject.CertificateDetails.CertificateLifetimeInfo = $certificateLifetimeInformation
+                                $connectorObject.CertificateDetails.UtcCertificateLifetimeInfo = $utcCertificateLifetimeInformation
                             }
                         }
                     }
